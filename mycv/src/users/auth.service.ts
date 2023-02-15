@@ -28,7 +28,7 @@ export class AuthService {
 
         // Create a new user and save it
         const user = await this.usersService.create(email, result);
-
+        
         // return the user
         return user;
 
