@@ -22,7 +22,7 @@ export class SerializeInterceptor implements NestInterceptor {
         // console.log("I'm running before the handler", context)
         return next.handle().pipe(
             map((data: any) => {
-                console.log(data);
+                // console.log(data);
                 return plainToInstance(this.dto, data, {
                     excludeExtraneousValues: true,
                 })
