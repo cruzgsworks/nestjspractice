@@ -8,6 +8,7 @@ import { Report } from './reports/report.entity';
 import { ReportsModule } from './reports/reports.module';
 import { User } from './users/user.entity';
 import { UsersModule } from './users/users.module';
+const ormconfig = require('./../ormconfig');
 const cookieSession = require('cookie-session');
 
 @Module({
@@ -19,14 +20,21 @@ const cookieSession = require('cookie-session');
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (config: ConfigService) => {
-        return {
-          type: 'sqlite',
-          database: config.get<string>('DB_NAME'),
-          entities: [User, Report],
-          synchronize: true, // Should be set to false on production
-        };
-      },
+        // console.log(ormconfig);
+        return ormconfig;
+      }
     }),
+    // TypeOrmModule.forRootAsync({
+    //   inject: [ConfigService],
+    //   useFactory: (config: ConfigService) => {
+    //     return {
+    //       type: 'sqlite',
+    //       database: config.get<string>('DB_NAME'),
+    //       entities: [User, Report],
+    //       synchronize: true, // Should be set to false on production
+    //     };
+    //   },
+    // }),
     // TypeOrmModule.forRoot({
     //   type: 'sqlite',
     //   database: 'db.sqlite',
@@ -48,11 +56,14 @@ const cookieSession = require('cookie-session');
   ],
 })
 export class AppModule {
+
+  constructor(private configService: ConfigService) {}
+
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(
         cookieSession({
-          keys: ['randomstring'],
+          keys: [this.configService.get('COOKIE_KEY')],
         }),
       )
       .forRoutes('*');
